@@ -27,3 +27,8 @@ Field Work Orders: technicians report equipment problems, supervisors manage the
 - Run (web 5173, api 3001): npm run dev
 - Tests: npm test
 - Full check: bash scripts/verify.sh
+
+## Memory in this repo
+- plan.md is the state of the current task. Update it after every step: what is done, what is next, decisions made. If you stop or hand over, the next agent starts by reading plan.md. If it is not written in the repo, it did not happen.
+- docs/decisions/ explains why things are built this way. Read the relevant record before planning. If a request conflicts with a decision, say so and quote it.
+- docs/LESSONS.md lists traps already hit. Search it for the symptom before guessing a fix; add a row when you fix a non-obvious failure.

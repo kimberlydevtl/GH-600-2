@@ -58,3 +58,25 @@ describe('create work order', () => {
   });
 });
 
+describe('status changes and history', () => {
+  it('closing a high-risk order without HSE sign-off is refused (409)', async () => {
+    const r = await as('tina').post('/api/workorders/1/close');
+    expect(r.status).toBe(409);
+    expect(r.body.status).toBe('awaiting_hse');
+  });
+  it('after HSE sign-off the order can be closed', async () => {
+    await as('hana').post('/api/workorders/1/hse-signoff');
+    const r = await as('tina').post('/api/workorders/1/close');
+    expect(r.status).toBe(200);
+    expect(r.body.status).toBe('closed');
+  });
+  it('only HSE can sign off (403)', async () => {
+    const r = await as('sam').post('/api/workorders/1/hse-signoff');
+    expect(r.status).toBe(403);
+  });
+  it('every change is in the history', async () => {
+    await as('tina').post('/api/workorders/7/start');
+    const r = await as('tina').get('/api/workorders/7/history');
+    expect(r.body.history.map((h) => h.action)).toEqual(['created', 'started']);
+  });
+});

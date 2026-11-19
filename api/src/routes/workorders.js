@@ -38,3 +38,47 @@ router.post('/', (req, res) => {
   res.status(201).json(w);
 });
 
+// Status changes. Every change writes history. High-risk orders need HSE sign-off before closing.
+router.post('/:id/start', (req, res) => {
+  const user = res.locals.user;
+  const order = getById(user, Number(req.params.id));
+  if (!order) return res.status(404).json({ error: 'Not found' });
+  if (!can(user).close) return res.status(403).json({ error: 'Not allowed' });
+  if (order.status !== 'open') return res.status(409).json({ error: `Cannot start a ${order.status} work order` });
+  order.status = 'in_progress';
+  addHistory(order, user.id, 'started');
+  res.json({ id: order.id, status: order.status });
+});
+
+router.post('/:id/close', (req, res) => {
+  const user = res.locals.user;
+  const order = getById(user, Number(req.params.id));
+  if (!order) return res.status(404).json({ error: 'Not found' });
+  if (!can(user).close) return res.status(403).json({ error: 'Not allowed' });
+  if (order.status === 'closed') return res.status(409).json({ error: 'Already closed' });
+  if (order.risk === 'high' && !order.hseSignedOffBy) {
+    order.status = 'awaiting_hse';
+    addHistory(order, user.id, 'close requested, waiting for HSE sign-off');
+    return res.status(409).json({ error: 'High-risk work orders need HSE sign-off before closing', status: order.status });
+  }
+  order.status = 'closed';
+  addHistory(order, user.id, 'closed');
+  res.json({ id: order.id, status: order.status });
+});
+
+router.post('/:id/hse-signoff', (req, res) => {
+  const user = res.locals.user;
+  const order = getById(user, Number(req.params.id));
+  if (!order) return res.status(404).json({ error: 'Not found' });
+  if (!can(user).hseSignOff) return res.status(403).json({ error: 'Only HSE can sign off' });
+  if (order.risk !== 'high') return res.status(409).json({ error: 'Only high-risk work orders need sign-off' });
+  order.hseSignedOffBy = user.id;
+  addHistory(order, user.id, 'HSE signed off');
+  res.json({ id: order.id, hseSignedOffBy: user.id });
+});
+
+router.get('/:id/history', (req, res) => {
+  const order = getById(res.locals.user, Number(req.params.id));
+  if (!order) return res.status(404).json({ error: 'Not found' });
+  res.json({ id: order.id, history: order.history });
+});

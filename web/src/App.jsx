@@ -34,10 +34,12 @@ function OrderList({ me, onChange }) {
   const [status, setStatus] = useState('');
   const [priority, setPriority] = useState('');
   const [error, setError] = useState('');
+  const [historyFor, setHistoryFor] = useState(null);
   useEffect(() => {
     const q = new URLSearchParams({ ...(status && { status }), ...(priority && { priority }) });
     api(`/workorders?${q}`).then((r) => setItems(r.items)).catch((e) => setError(e.message));
   }, [status, priority]);
+  const act = (id, action) => api(`/workorders/${id}/${action}`, { method: 'POST' }).then(onChange).catch((e) => { setError(e.message); onChange(); });
   return (
     <section>
       <h2>Work orders</h2>
@@ -48,11 +50,18 @@ function OrderList({ me, onChange }) {
         <option value="">All</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select></label>
       {error && <p className="error">{error}</p>}
       <table>
-        <thead><tr><th>#</th><th>Title</th><th>Asset</th><th>Site</th><th>Priority</th><th>Risk</th><th>Status</th></tr></thead>
+        <thead><tr><th>#</th><th>Title</th><th>Asset</th><th>Site</th><th>Priority</th><th>Risk</th><th>Status</th><th>Actions</th></tr></thead>
         <tbody>{items.map((w) => (
           <tr key={w.id}><td>{w.id}</td><td>{w.title}</td><td>{w.asset}</td><td>{w.site}</td><td>{w.priority}</td><td>{w.risk}</td><td>{w.status}</td>
+            <td>
+              {me.can.close && w.status === 'open' && <button onClick={() => act(w.id, 'start')}>Start</button>}
+              {me.can.close && w.status !== 'closed' && <button onClick={() => act(w.id, 'close')}>Close</button>}
+              {me.can.hseSignOff && w.risk === 'high' && !w.hseSignedOffBy && <button onClick={() => act(w.id, 'hse-signoff')}>HSE sign-off</button>}
+              <button onClick={() => setHistoryFor(w.id)}>History</button>
+            </td>
           </tr>))}</tbody>
       </table>
+      {historyFor && <History id={historyFor} onClose={() => setHistoryFor(null)} />}
     </section>
   );
 }
@@ -103,3 +112,13 @@ function Dashboard() {
   );
 }
 
+function History({ id, onClose }) {
+  const [h, setH] = useState([]);
+  useEffect(() => { api(`/workorders/${id}/history`).then((r) => setH(r.history)); }, [id]);
+  return (
+    <section>
+      <h3>History of #{id} <button onClick={onClose}>Close</button></h3>
+      <ul>{h.map((e, i) => <li key={i}>{new Date(e.at).toLocaleString()}: {e.by} {e.action}</li>)}</ul>
+    </section>
+  );
+}
