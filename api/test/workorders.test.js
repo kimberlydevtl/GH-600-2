@@ -36,3 +36,25 @@ describe('list work orders', () => {
   });
 });
 
+describe('create work order', () => {
+  const ok = { title: 'Belt slipping on conveyor', asset: 'Conveyor K-1', priority: 'medium', risk: 'normal' };
+  it('a technician creates one for their own site (201)', async () => {
+    const r = await as('tom').post('/api/workorders', ok);
+    expect(r.status).toBe(201);
+    expect(r.body).toMatchObject({ site: 'Site B', status: 'open', reportedBy: 'tom' });
+  });
+  it('ignores a site sent in the body', async () => {
+    const r = await as('tom').post('/api/workorders', { ...ok, site: 'Site A' });
+    expect(r.body.site).toBe('Site B');
+  });
+  it('rejects invalid input (400)', async () => {
+    const r = await as('tom').post('/api/workorders', { title: 'x', priority: 'urgent' });
+    expect(r.status).toBe(400);
+    expect(r.body.details.length).toBeGreaterThan(1);
+  });
+  it('HSE cannot create (403)', async () => {
+    const r = await as('hana').post('/api/workorders', ok);
+    expect(r.status).toBe(403);
+  });
+});
+

@@ -22,3 +22,19 @@ router.get('/:id', (req, res) => {
   res.json(w);
 });
 
+// POST /api/workorders  (technicians and supervisors, for their own site)
+router.post('/', (req, res) => {
+  const user = res.locals.user;
+  if (!can(user).create) return res.status(403).json({ error: 'Only technicians and supervisors can create work orders' });
+  const { title, asset, priority, risk } = req.body ?? {};
+  const errors = [];
+  if (typeof title !== 'string' || title.trim().length < 3 || title.trim().length > 120) errors.push('title must be 3 to 120 characters');
+  if (typeof asset !== 'string' || asset.trim().length < 2) errors.push('asset is required');
+  if (!PRIORITIES.includes(priority)) errors.push(`priority must be one of ${PRIORITIES.join(', ')}`);
+  if (!RISKS.includes(risk)) errors.push(`risk must be one of ${RISKS.join(', ')}`);
+  if (errors.length) return res.status(400).json({ error: 'Invalid work order', details: errors });
+  const order = create(user, { title: title.trim(), asset: asset.trim(), priority, risk });
+  const { history, ...w } = order;
+  res.status(201).json(w);
+});
+

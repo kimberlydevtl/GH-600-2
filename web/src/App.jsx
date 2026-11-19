@@ -21,6 +21,7 @@ export default function App() {
           </select>
         </label>
       </header>
+      {me?.can.create && <NewOrderForm onCreated={reload} />}
       {me && <OrderList key={`l${user}${refresh}`} me={me} onChange={reload} />}
       {!me && <p>Loading...</p>}
     </div>
@@ -51,6 +52,32 @@ function OrderList({ me, onChange }) {
           <tr key={w.id}><td>{w.id}</td><td>{w.title}</td><td>{w.asset}</td><td>{w.site}</td><td>{w.priority}</td><td>{w.risk}</td><td>{w.status}</td>
           </tr>))}</tbody>
       </table>
+    </section>
+  );
+}
+
+function NewOrderForm({ onCreated }) {
+  const empty = { title: '', asset: '', priority: 'medium', risk: 'normal' };
+  const [form, setForm] = useState(empty);
+  const [errors, setErrors] = useState([]);
+  const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
+  const submit = (e) => {
+    e.preventDefault();
+    api('/workorders', { method: 'POST', body: JSON.stringify(form) })
+      .then(() => { setForm(empty); setErrors([]); onCreated(); })
+      .catch((err) => setErrors(err.body?.details || [err.message]));
+  };
+  return (
+    <section>
+      <h2>New work order</h2>
+      <form onSubmit={submit}>
+        <label>Title <input value={form.title} onChange={set('title')} /></label>{' '}
+        <label>Asset <input value={form.asset} onChange={set('asset')} /></label>{' '}
+        <label>Priority <select value={form.priority} onChange={set('priority')}><option>high</option><option>medium</option><option>low</option></select></label>{' '}
+        <label>Risk <select value={form.risk} onChange={set('risk')}><option>normal</option><option>high</option></select></label>{' '}
+        <button type="submit">Create</button>
+      </form>
+      {errors.map((m) => <p key={m} className="error">{m}</p>)}
     </section>
   );
 }
