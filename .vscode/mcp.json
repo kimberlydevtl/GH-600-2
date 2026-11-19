@@ -1,0 +1,10 @@
+{
+  "servers": {
+    "fieldops": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["mcp/server.js"],
+      "env": { "FIELDOPS_API_URL": "http://localhost:3001", "FIELDOPS_USER": "sam", "MCP_MODE": "read" }
+    }
+  }
+}

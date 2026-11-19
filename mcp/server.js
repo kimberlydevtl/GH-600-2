@@ -18,6 +18,20 @@ const text = (r) => ({ content: [{ type: 'text', text: JSON.stringify(r.body, nu
 export function buildServer() {
   const server = new McpServer({ name: 'fieldops', version: '1.0.0' });
   server.tool('whoami', 'Show which user and role this MCP server acts as.', {}, async () => text(await call('/me')));
+  server.tool(
+    'list_work_orders',
+    'List work orders the current user can see. Optional filters: status (open, in_progress, awaiting_hse, closed) and priority (high, medium, low).',
+    { status: z.enum(['open', 'in_progress', 'awaiting_hse', 'closed']).optional(), priority: z.enum(['high', 'medium', 'low']).optional() },
+    async ({ status, priority }) => text(await call(`/workorders?${new URLSearchParams({ ...(status && { status }), ...(priority && { priority }) })}`)),
+  );
+  if (MODE === 'write') {
+    server.tool(
+      'create_work_order',
+      'Create a work order for the current user\'s site. Write tool: only exposed when MCP_MODE=write.',
+      { title: z.string(), asset: z.string(), priority: z.enum(['high', 'medium', 'low']), risk: z.enum(['normal', 'high']) },
+      async (args) => text(await call('/workorders', { method: 'POST', body: JSON.stringify(args) })),
+    );
+  }
   return server;
 }
 
