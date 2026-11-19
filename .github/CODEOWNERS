@@ -1,0 +1,7 @@
+# Sensitive paths need a human owner to approve every change, including agent PRs.
+# Replace OWNER with your GitHub username.
+/api/src/auth.js            @OWNER
+/api/src/routes/workorders.js @OWNER
+/docs/decisions/            @OWNER
+/.github/                   @OWNER
+/AGENTS.md                  @OWNER
