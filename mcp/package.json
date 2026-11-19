@@ -2,6 +2,12 @@
   "name": "mcp",
   "private": true,
   "type": "module",
-  "scripts": { "start": "node server.js", "smoke": "node smoke.js" },
-  "dependencies": { "@modelcontextprotocol/sdk": "1.17.0", "zod": "3.25.67" }
+  "scripts": {
+    "start": "node server.js",
+    "smoke": "node smoke.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "zod": "4.6.7"
+  }
 }
