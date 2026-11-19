@@ -21,6 +21,7 @@ export default function App() {
           </select>
         </label>
       </header>
+      {me && <Dashboard key={`d${user}${refresh}`} />}
       {me?.can.create && <NewOrderForm onCreated={reload} />}
       {me && <OrderList key={`l${user}${refresh}`} me={me} onChange={reload} />}
       {!me && <p>Loading...</p>}
@@ -78,6 +79,26 @@ function NewOrderForm({ onCreated }) {
         <button type="submit">Create</button>
       </form>
       {errors.map((m) => <p key={m} className="error">{m}</p>)}
+    </section>
+  );
+}
+
+function Dashboard() {
+  const [s, setS] = useState(null);
+  useEffect(() => { api('/stats').then(setS); }, []);
+  if (!s) return null;
+  const max = Math.max(1, ...Object.values(s.openByPriority));
+  return (
+    <section>
+      <h2>Dashboard</h2>
+      <div style={{ display: 'flex', gap: 12 }}>
+        <div>Total: <b>{s.total}</b></div><div>Open: <b>{s.byStatus.open}</b></div>
+        <div>Awaiting HSE: <b>{s.byStatus.awaiting_hse}</b></div><div>Open high-risk: <b>{s.openHighRisk}</b></div>
+      </div>
+      <h3>Open by priority</h3>
+      {Object.entries(s.openByPriority).map(([p, n]) => (
+        <div key={p}>{p} <span style={{ display: 'inline-block', background: '#888', height: 10, width: `${(n / max) * 200}px` }} /> {n}</div>
+      ))}
     </section>
   );
 }

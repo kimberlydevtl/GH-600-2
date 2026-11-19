@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { identify, can } from './auth.js';
 import { users } from './data/repo.js';
 import { router as workOrders } from './routes/workorders.js';
+import { router as stats } from './routes/stats.js';
 
 export const BUILD_ID = process.env.BUILD_ID || `dev-${Date.now()}`;
 
@@ -16,6 +17,7 @@ export function createApp() {
   app.use('/api', identify);
   app.get('/api/me', (_req, res) => { const u = res.locals.user; res.json({ ...u, can: can(u) }); });
   app.use('/api/workorders', workOrders);
+  app.use('/api/stats', stats);
   const dist = fileURLToPath(new URL('../../web/dist', import.meta.url));
   if (existsSync(dist)) {
     app.use(express.static(dist));
