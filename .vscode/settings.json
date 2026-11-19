@@ -1,0 +1,12 @@
+{
+  "chat.tools.terminal.autoApprove": {
+    "npm test": true,
+    "bash scripts/verify.sh": true,
+    "git status": true,
+    "git diff": true,
+    "git push": false,
+    "--no-verify": false,
+    "rm": false,
+    "git reset": false
+  }
+}
