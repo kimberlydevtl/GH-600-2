@@ -1,0 +1,20 @@
+name: Agent task
+description: A task an AI agent (or a person) can finish and prove. Goal, success criteria, scope, risk.
+title: "[Task] "
+body:
+  - type: textarea
+    id: goal
+    attributes: { label: Goal, description: "One sentence: the outcome a user would notice." }
+    validations: { required: true }
+  - type: textarea
+    id: criteria
+    attributes: { label: Success criteria, description: "Checks that can fail. Include the 'not allowed' case." }
+    validations: { required: true }
+  - type: textarea
+    id: scope
+    attributes: { label: Scope, description: "In: files or folders it may change. Out: everything else." }
+    validations: { required: true }
+  - type: dropdown
+    id: risk
+    attributes: { label: Risk, options: ["Low: docs, tests, styling", "Medium: API behaviour", "High: auth, permissions, data, .github"] }
+    validations: { required: true }
