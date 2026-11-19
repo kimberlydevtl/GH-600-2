@@ -1,0 +1,20 @@
+{
+  "users": [
+    { "id": "tina", "name": "Tina Ong", "role": "technician", "site": "Site A" },
+    { "id": "tom", "name": "Tom Reyes", "role": "technician", "site": "Site B" },
+    { "id": "sam", "name": "Sam Lee", "role": "supervisor", "site": "Site A" },
+    { "id": "sue", "name": "Sue Park", "role": "supervisor", "site": "Site B" },
+    { "id": "hana", "name": "Hana Idris", "role": "hse", "site": null },
+    { "id": "ada", "name": "Ada Kim", "role": "admin", "site": null }
+  ],
+  "workOrders": [
+    { "id": 1, "title": "Vibration high on pump", "asset": "Pump P-104", "site": "Site A", "priority": "high", "risk": "high", "status": "open", "reportedBy": "tina", "createdAt": "2026-11-02T08:10:00Z" },
+    { "id": 2, "title": "Replace pressure gauge", "asset": "Separator S-12", "site": "Site A", "priority": "medium", "risk": "high", "status": "in_progress", "reportedBy": "tina", "createdAt": "2026-11-05T09:30:00Z" },
+    { "id": 3, "title": "Generator oil change", "asset": "Generator G-3", "site": "Site A", "priority": "low", "risk": "normal", "status": "closed", "reportedBy": "sam", "createdAt": "2026-10-28T13:00:00Z" },
+    { "id": 4, "title": "Leaking valve flange", "asset": "Valve V-221", "site": "Site B", "priority": "high", "risk": "high", "status": "open", "reportedBy": "tom", "createdAt": "2026-11-10T07:45:00Z" },
+    { "id": 5, "title": "Calibrate flow meter", "asset": "Meter F-07", "site": "Site B", "priority": "medium", "risk": "normal", "status": "open", "reportedBy": "tom", "createdAt": "2026-11-12T10:20:00Z" },
+    { "id": 6, "title": "Compressor filter swap", "asset": "Compressor C-5", "site": "Site B", "priority": "low", "risk": "normal", "status": "in_progress", "reportedBy": "sue", "createdAt": "2026-11-14T15:05:00Z" },
+    { "id": 7, "title": "Heat exchanger inspection", "asset": "Exchanger E-9", "site": "Site A", "priority": "medium", "risk": "normal", "status": "open", "reportedBy": "sam", "createdAt": "2026-11-16T11:00:00Z" },
+    { "id": 8, "title": "Wellhead seal check", "asset": "Wellhead W-2", "site": "Site B", "priority": "high", "risk": "high", "status": "awaiting_hse", "reportedBy": "tom", "createdAt": "2026-11-17T06:30:00Z" }
+  ]
+}

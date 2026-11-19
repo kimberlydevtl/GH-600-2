@@ -1,0 +1,14 @@
+{
+  "name": "fieldops-agent-lab",
+  "private": true,
+  "type": "module",
+  "workspaces": ["api", "web", "mcp"],
+  "scripts": {
+    "dev": "concurrently -n api,web \"npm run dev -w api\" \"npm run dev -w web\"",
+    "test": "npm test -w api",
+    "build": "npm run build -w web",
+    "start": "npm start -w api",
+    "verify": "bash scripts/verify.sh"
+  },
+  "devDependencies": { "concurrently": "9.1.2" }
+}
