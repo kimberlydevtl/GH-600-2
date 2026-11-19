@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Guardrail: nothing is committed unless the verify ladder passes.
+# Enable once per clone: git config core.hooksPath .githooks
+echo "Commit gate: running the verify ladder..."
+mkdir -p .verify
+if ! bash scripts/verify.sh > .verify/hook.log 2>&1; then
+  echo "BLOCKED: the verify ladder failed. See .verify/report.md"
+  tail -n 15 .verify/hook.log
+  exit 1
+fi
+echo "Commit gate: PASS"
